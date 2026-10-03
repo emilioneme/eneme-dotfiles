@@ -1,0 +1,7 @@
+[mgr]
+title_format   = "{cwd}"
+
+[opener]
+edit = [
+    { run = 'nvim "$@"', desc = "Open with default", block = true, for = "unix" },
+]

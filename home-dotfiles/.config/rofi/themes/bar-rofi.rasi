@@ -1,0 +1,56 @@
+/**
+ * ROFI Color theme
+ * User: eneme
+ * Copyright: eneme
+ */
+
+* {
+    background-color:      #1a1a1ad9;
+    border-color:          White;
+    text-color:           White;
+    font:            "Times New Roman 12";
+}
+window {
+    anchor:     south;
+    location:   south;
+    width:      100%;
+    padding:    4px;
+    children:   [ horibox ];
+}
+horibox {
+    orientation: horizontal;
+    children:   [ prompt, entry, listview ];
+}
+listview {
+    layout:     horizontal;
+    spacing:    20px;
+    lines:      100;
+}
+entry {
+    expand:     false;
+    width:      10em;
+    placeholder:       "type...";
+    placeholder-color: #888888;
+}
+element {
+    padding: 0px 30px;
+    spacing: 20px; 
+    border-radius: 100px;
+
+}
+element selected {
+    background-color: #36363640;
+}
+
+element-text, element-icon {
+  background-color: transparent;
+  text-color: inherit;
+}
+
+prompt {
+    padding:        0px 30px;
+}
+
+configuration {
+    display-drun: "drun";
+}

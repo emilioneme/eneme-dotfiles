@@ -1,0 +1,12 @@
+# Quattro shell lock-screen palette.
+background       = "#2c2c2e"
+background-alpha = 0.8
+text             = "#f2f2f2"
+placeholder      = "#ffffff99"
+text-error       = "#f2f2f2"
+border           = "#999999"
+border-active    = "#999999"
+border-error     = "#999999"
+border-alpha     = 1.0
+selection        = "#c8c8c8"
+selection-alpha  = 1.0

@@ -1,0 +1,11 @@
+no-color: true
+style:
+  selected-row:
+    text-color: white
+    background-color: black
+  header:
+    text-color: white
+    background-color: black
+  footer:
+    text-color: white
+    background-color: black

@@ -1,0 +1,21 @@
+  
+//@theme "/usr/share/rofi/themes/lb.rasi"
+
+//@theme "/usr/share/rofi/themes/glue_pro_blue.rasi"
+
+//@theme "/usr/share/rofi/themes/dmenu.rasi"
+
+//@theme "/usr/share/rofi/themes/docu.rasi"
+
+//@theme "/home/eneme/.config/rofi/themes/top-bar.rasi"
+
+
+configuration {
+    modes: "drun,run,window,calc";
+    show-icons: true;
+    icon-theme: "WhiteSur-grey-dark";
+    disable-history:  false;  /* Ensure history is enabled */
+    max-history-size: 25;     /* Increase from default 25 to track more frequent apps */
+}
+
+@theme "/home/eneme/.config/rofi/themes/bar-rofi.rasi"
