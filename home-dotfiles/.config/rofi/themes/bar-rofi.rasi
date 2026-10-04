@@ -5,7 +5,8 @@
  */
 
 * {
-    background-color:      #1a1a1ad9;
+    /*background-color:      #1a1a1ad9; */
+    background-color:      #000000d9; 
     border-color:          White;
     text-color:           White;
     font:            "Times New Roman 12";
@@ -29,7 +30,7 @@ listview {
 entry {
     expand:     false;
     width:      10em;
-    placeholder:       "type...";
+    placeholder:       "";
     placeholder-color: #888888;
 }
 element {
@@ -53,4 +54,5 @@ prompt {
 
 configuration {
     display-drun: "drun";
+
 }

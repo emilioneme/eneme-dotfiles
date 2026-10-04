@@ -60,6 +60,7 @@ local networkManager = "nm-connection-editor"
      hl.exec_cmd("awww-daemon")
      hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
      hl.exec_cmd("wp-rotate.sh")
+     hl.exec_cmd("quickshell")
 --   hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &")
 --   hl.exec_cmd("nm-applet")
 --   hl.exec_cmd("export PATH=\$(find ~/.local/bin -type d -printf "%p:")\$PATH")
@@ -122,6 +123,9 @@ hl.bind("SUPER + SHIFT + B",      hl.dsp.exec_cmd(bluetoothManager))
 hl.bind("SUPER + SHIFT + C",      hl.dsp.exec_cmd(diskManager))
 hl.bind("SUPER + SHIFT + N",      hl.dsp.exec_cmd(networkManager))
 
+-- Quickshell
+hl.bind("SUPER + H", hl.dsp.exec_cmd("qs ipc call bar toggle"))
+
 -- Window navigation
 hl.bind("SUPER + Q", hl.dsp.window.float({ action = "toggle" }))
 hl.bind("SUPER + O", hl.dsp.window.float({ action = "toggle" }))
@@ -130,14 +134,15 @@ hl.bind("SUPER + F", hl.dsp.window.fullscreen())
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
-hl.bind("SUPER + H", hl.dsp.focus({ direction = "left" }))
-hl.bind("SUPER + L", hl.dsp.focus({ direction = "right" }))
-hl.bind("SUPER + J", hl.dsp.focus({ direction = "up" }))
-hl.bind("SUPER + K", hl.dsp.focus({ direction = "down" }))
+
 hl.bind("SUPER + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
 hl.bind("SUPER + up",    hl.dsp.focus({ direction = "up" }))
 hl.bind("SUPER + down",  hl.dsp.focus({ direction = "down" }))
+hl.bind("SUPER + SHIFT + left",  hl.dsp.exec_cmd("hyprctl dispatch swapwindow l"))
+hl.bind("SUPER + SHIFT + right", hl.dsp.exec_cmd("hyprctl dispatch swapwindow r"))
+hl.bind("SUPER + SHIFT + up",    hl.dsp.exec_cmd("hyprctl dispatch swapwindow u"))
+hl.bind("SUPER + SHIFT + down",  hl.dsp.exec_cmd("hyprctl dispatch swapwindow d"))
 
 -- Workspace navigation
 for i = 1, 10 do
@@ -156,8 +161,8 @@ hl.bind("SUPER + P", hl.dsp.window.pseudo())
 hl.bind("SUPER + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 
 --  Sreenshots
-hl.bind("SUPER + F2", hl.dsp.exec_cmd("hyprshot -m region"))
-hl.bind("SUPER + F3", hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind("SUPER + S", hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("hyprshot -m window"))
 
 
 -- Laptop multimedia keys for volume and LCD brightness
