@@ -37,12 +37,12 @@ local terminal    = "ghostty"
 local fileManager = "nautilus"
 local menu = "rofi"
 local browser = "google-chrome-stable"
-local games = "steam"
+local games = "steam --class=com.autostart.term"
 local discord = "discord"
 local audioManager = "pavucontrol"
 local bluetoothManager = "blueman-manager"
 local diskManager = "baobab"
-local perfomanceManager = terminal .." -e btop"
+local perfomanceManager = terminal .." --class=com.btop.term -e btop"
 local networkManager = "nm-connection-editor"
 
 
@@ -56,8 +56,9 @@ local networkManager = "nm-connection-editor"
 -- Or execute your favorite apps at launch like this:
 --
  hl.on("hyprland.start", function () 
-     hl.exec_cmd(terminal)
+     hl.exec_cmd(terminal .. " --class=com.autostart.term")
      hl.exec_cmd("awww-daemon")
+     hl.exec_cmd("wp-rotate.sh")
 --   hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &")
 --   hl.exec_cmd("nm-applet")
 --   hl.exec_cmd("export PATH=\$(find ~/.local/bin -type d -printf "%p:")\$PATH")
@@ -112,7 +113,7 @@ hl.bind("SUPER + TAB",            hl.dsp.exec_cmd(menu .. " -show window"))
 hl.bind("SUPER + SHIFT + RETURN", hl.dsp.exec_cmd(browser))
 hl.bind("SUPER + SHIFT + P",      hl.dsp.exec_cmd(perfomanceManager))
 hl.bind("SUPER + SHIFT + D",      hl.dsp.exec_cmd(discord))
-hl.bind("SUPER + SHIFT + W",      hl.dsp.exec_cmd(browser.."--app=https://web.whatsapp.com/"))
+hl.bind("SUPER + SHIFT + W",      hl.dsp.exec_cmd(browser.. " --app=https://web.whatsapp.com/"))
 hl.bind("SUPER + SHIFT + G",      hl.dsp.exec_cmd(games))
 hl.bind("SUPER + SHIFT + F",      hl.dsp.exec_cmd(fileManager))
 hl.bind("SUPER + SHIFT + A",      hl.dsp.exec_cmd(audioManager))
@@ -152,6 +153,11 @@ hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" })
 
 hl.bind("SUPER + P", hl.dsp.window.pseudo())
 hl.bind("SUPER + J", hl.dsp.layout("togglesplit"))    -- dwindle only
+
+--  Sreenshots
+hl.bind("SUPER + F2", hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind("SUPER + F3", hl.dsp.exec_cmd("hyprshot -m window"))
+
 
 -- Laptop multimedia keys for volume and LCD brightness
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
@@ -315,6 +321,15 @@ local suppressMaximizeRule = hl.window_rule({
     suppress_event = "maximize",
 })
 -- suppressMaximizeRule:set_enabled(false)
+
+hl.window_rule({
+    name = "autostart-term-style",
+    match = { class = "^com.autostart.term$" },
+    float = true,
+    size = "800 500",
+    center = true,
+})
+
 
 hl.window_rule({
     -- Fix some dragging issues with XWayland

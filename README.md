@@ -47,6 +47,7 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) — cloning this rep
    sudo pacman -S hyprland stow quickshell git ghostty rofi neovim yazi nautilus awww webapp-creator swaync gtk3 gtk4 xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-hyprland
    ```
 
+# Dotfiles Installation
 ### 8. Clone this repo and stow your dotfiles
 
    ```bash
@@ -57,34 +58,25 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) — cloning this rep
    ```
    That's it, all your configs are now symlinked into place.
 
-## Installation
+# .CONFIG
+   - hypr      (has all the keybidnings and starts)
+   - fish      (allows me to run perosdnal scripts in the .local/bin like wp-set)
+      - aliases: cd for z (zoxide), and dotfiles for cd dotfiles
+   - btop      (theme)
+   - fasfecth  (ascii)
+   - gdu       (theme)
+   - ghostty   (theme)
+   - mimeapps.list (defualt zdg apps)
+   - nvim      (theme)
+   - rofi      (configs, theme, style)
+   - yazi      (toml)
 
 
-## PLYMOUTH THEMES
+# .LOCAL/BIN
+   - wp-set.sh  (set wallpapers using awww)
+   - wp-rotate.sh (rotates the wallpapers using awww)
 
-Plymouth themes go to `/usr/share/plymouth/themes` (system location), so they need sudo and are **not** handled by `stow.sh`.
-
-### Install Plymouth themes
-```bash
-TODO: cd REPOPATH, and run .plymouth-add.sh /misc/plymoth/
-TODO: symlink the REPOPATH/mis/plymouth folder to /usr/share/plymouth/themes
-```
-
-### Set your preferred theme
-
-```bash
-sudo plymouth-set-default-theme <theme-name>
-```
-
-### Rebuild initramfs so the theme loads at boot
-
-```bash
-sudo mkinitcpio -P
-```
-
----
-
-## .THEMES (in .config)
+# .THEMES
 
 You can find themes on the web, put them on `.Themes`, and use the nwg-look tool to preview the themes.
 
@@ -116,6 +108,7 @@ gsettings set org.gnome.desktop.interface icon-theme WhiteSur-grey-dark
 - avahi-daemon            (ssh server)
 - baobab                  (disk usage analyzer)
 - network-manager-applet  (network manager)
+- gdu                     (tui storage manager)
 
 ---
 

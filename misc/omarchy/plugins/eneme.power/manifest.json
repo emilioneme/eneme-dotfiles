@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "eneme.power",
+  "name": "Power Menu",
+  "version": "1.0.0",
+  "author": "eneme",
+  "description": "System power and session controls widget",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Power Menu",
+    "description": "Reboot, power off, suspend, hibernate, lock, and screensaver controls",
+    "category": "System",
+    "allowMultiple": false
+  }
+}

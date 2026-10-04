@@ -8,3 +8,5 @@ end
 function fish_greeting
    # potentially disabling fastfetch
 end
+
+zoxide init fish | source

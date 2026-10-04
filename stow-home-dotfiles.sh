@@ -15,6 +15,7 @@ echo "Starting stow process..."
 # Navigate to the stow directory so 'find' paths are relative
 cd "$STOW_DIR" || exit 1
 
+
 # Find all files in the stow directory
 find . -type f | while read -r file; do
     # Remove the leading './' from the find output
@@ -23,14 +24,11 @@ find . -type f | while read -r file; do
     
     # Check if a file or symlink exists at the target location
     if [ -e "$target_file" ] || [ -L "$target_file" ]; then
-        # Check if it's already a symlink
-        if [ -L "$target_file" ]; then
-            # Read where the symlink points
-            target_link=$(readlink -f "$target_file")
-            # If it already points into our STOW_DIR, safely ignore it
-            if [[ "$target_link" == "$STOW_DIR"* ]]; then
-                continue
-            fi
+        # Resolve through symlinked parent dirs too (stow folds directories)
+        target_real=$(readlink -f "$target_file")
+        # If it already resolves into our STOW_DIR, safely ignore it
+        if [[ "$target_real" == "$STOW_DIR"/* ]]; then
+            continue
         fi
         
         # If we reach here, it is a conflict!
