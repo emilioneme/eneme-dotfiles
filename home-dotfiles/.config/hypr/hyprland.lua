@@ -61,6 +61,7 @@ local networkManager = "nm-connection-editor"
      hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
      hl.exec_cmd("wp-rotate.sh")
      hl.exec_cmd("quickshell")
+--   hl.exec_cmd("qs ipc call bar toggle")
 --   hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &")
 --   hl.exec_cmd("nm-applet")
 --   hl.exec_cmd("export PATH=\$(find ~/.local/bin -type d -printf "%p:")\$PATH")
@@ -125,6 +126,7 @@ hl.bind("SUPER + SHIFT + N",      hl.dsp.exec_cmd(networkManager))
 
 -- Quickshell
 hl.bind("SUPER + H", hl.dsp.exec_cmd("qs ipc call bar toggle"))
+hl.bind("SUPER + R", hl.dsp.exec_cmd("~/.local/bin/reload-shell"))
 
 -- Window navigation
 hl.bind("SUPER + Q", hl.dsp.window.float({ action = "toggle" }))

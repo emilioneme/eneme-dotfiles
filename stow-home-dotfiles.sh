@@ -48,4 +48,6 @@ done
 echo "Running stow..."
 stow --dir="$REPO_DIR" --target="$TARGET_DIR" home-dotfiles
 
+"$REPO_DIR/home-dotfiles/.local/bin/reload-shell" || true
+
 echo "Done! Dotfiles have been stowed successfully."

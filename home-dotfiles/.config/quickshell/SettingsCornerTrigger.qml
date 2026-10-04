@@ -5,7 +5,6 @@ import QtQuick
 Item {
 id: root
 property bool hyprlockEnabled: true
-property bool settingsEnabled: true
 property bool rofiEnabled: false
 property bool wallpaperEnabled: false
 property bool wlogoutEnabled: true
@@ -14,9 +13,6 @@ property int triggerHeight: 10
 property color triggerColor: '#0037ff00'
 property real hyprlockFrom: 0.0
 property real hyprlockTo: 0.01
-
-property real settingsFrom: 0.25
-property real settingsTo: 0.40
 
 property real rofiFrom: 0.45
 property real rofiTo: 0.55
@@ -46,29 +42,6 @@ PanelWindow {
         hoverEnabled: true
         onEntered: Quickshell.execDetached([
             "hyprlock"
-        ])
-    }
-}
-
-PanelWindow {
-    id: settingsTrigger
-    visible: root.settingsEnabled
-    anchors { top: true; left: true }
-    implicitHeight: root.triggerHeight
-    implicitWidth: screen ? Math.round(screen.width * (root.settingsTo - root.settingsFrom)) : 0
-    margins {
-        left: screen ? Math.round(screen.width * root.settingsFrom) : 0
-        top: 0
-    }
-    color: root.triggerColor
-    exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.layer: WlrLayer.Overlay
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: Quickshell.execDetached([
-            "qs", "ipc", "call", "settings", "toggle"
         ])
     }
 }

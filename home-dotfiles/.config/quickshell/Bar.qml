@@ -572,10 +572,7 @@ Scope {
                             sink.audio.volume = Math.max(0, Math.min(1.0, v));
                         }
                         onClicked: mouse => {
-                            if (mouse.button === Qt.RightButton)
-                                root.run("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle");
-                            else
-                                root.run("qs ipc call settings sound");
+                            root.run("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle");
                         }
                     }
 
@@ -585,7 +582,6 @@ Scope {
                         yOffset: root.iconYOffset
                         text: root.netState === "wifi" ? "\uDB81\uDDA9"
                             : root.netState === "ethernet" ? "\uDB80\uDE00" : "\uDB81\uDDAA"
-                        onClicked: root.run("qs ipc call settings network")
                     }
 
                     // Battery (hidden unless a laptop battery exists)
