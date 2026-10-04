@@ -14,8 +14,9 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) — cloning this rep
 - **stow**                (dotfiles symlink manager)
 - **hypershot** 
 - **xdg-desktop-portal**  (flatpak portals)
-- **xdg-desktop-portal-gtk**
-- **xdg-desktop-portal-hyprland**
+   - **xdg-desktop-portal-gtk**
+   - **xdg-desktop-portal-hyprland**
+- **gnome-keyring**
 
 - ghostty                 (terminal)
 - rofi                    (app launcher)
@@ -27,6 +28,26 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) — cloning this rep
 - swaync                  (notification center)
 - gtk3 and gtk4           (gnome gui kit)
 - google-chrome-stable    (or a browser)
+
+---
+
+## MY TOOLS
+
+- vscode                  (code editor)
+- lazygit                 (git gui)
+- github-desktop          (github gui)
+- btop++                  (performance monitor)
+- mpv                     (media player)
+- nwg-look                (gtk theme tool)
+- blueman                 (bluetooth control)
+- shelly                  (library manager)
+- pavucontrol             (volume control)
+- avahi-daemon            (ssh server)
+- baobab                  (disk usage analyzer)
+- network-manager-applet  (network manager)
+- gdu                     (tui storage manager)
+- seahorse                (keyring manager)
+- opencode                (AI)
 
 ---
 
@@ -91,24 +112,6 @@ gsettings set org.gnome.desktop.interface gtk-theme MacTahoe-Dark
 ```bash
 gsettings set org.gnome.desktop.interface icon-theme WhiteSur-grey-dark
 ```
-
----
-
-## MY TOOLS
-
-- vscode                  (code editor)
-- lazygit                 (git gui)
-- github-desktop          (github gui)
-- btop++                  (performance monitor)
-- mpv                     (media player)
-- nwg-look                (gtk theme tool)
-- blueman                 (bluetooth control)
-- shelly                  (library manager)
-- pavucontrol             (volume control)
-- avahi-daemon            (ssh server)
-- baobab                  (disk usage analyzer)
-- network-manager-applet  (network manager)
-- gdu                     (tui storage manager)
 
 ---
 
