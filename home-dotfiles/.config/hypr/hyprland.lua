@@ -28,6 +28,7 @@ hl.monitor({
 })
 
 
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -42,7 +43,7 @@ local discord = "discord"
 local audioManager = "pavucontrol"
 local bluetoothManager = "blueman-manager"
 local diskManager = "baobab"
-local perfomanceManager = terminal .." --class=com.btop.term -e btop"
+local perfomanceManager = terminal .." -e btop"
 local networkManager = "nm-connection-editor"
 
 
@@ -114,15 +115,15 @@ hl.bind("SUPER + SPACE",          hl.dsp.exec_cmd(menu .. " -show drun"))
 hl.bind("SUPER + SHIFT + SPACE",  hl.dsp.exec_cmd(menu .. " -show run"))
 hl.bind("SUPER + TAB",            hl.dsp.exec_cmd(menu .. " -show window"))
 hl.bind("SUPER + SHIFT + RETURN", hl.dsp.exec_cmd(browser))
-hl.bind("SUPER + SHIFT + P",      hl.dsp.exec_cmd(perfomanceManager))
 hl.bind("SUPER + SHIFT + D",      hl.dsp.exec_cmd(discord))
 hl.bind("SUPER + SHIFT + W",      hl.dsp.exec_cmd(browser.. " --app=https://web.whatsapp.com/"))
-hl.bind("SUPER + SHIFT + G",      hl.dsp.exec_cmd(games))
-hl.bind("SUPER + SHIFT + F",      hl.dsp.exec_cmd(fileManager))
-hl.bind("SUPER + SHIFT + A",      hl.dsp.exec_cmd(audioManager))
-hl.bind("SUPER + SHIFT + B",      hl.dsp.exec_cmd(bluetoothManager))
-hl.bind("SUPER + SHIFT + C",      hl.dsp.exec_cmd(diskManager))
-hl.bind("SUPER + SHIFT + N",      hl.dsp.exec_cmd(networkManager))
+hl.bind("SUPER + SHIFT + P",      hl.dsp.exec_cmd(perfomanceManager, { float = true, size = {1280, 720} }))
+hl.bind("SUPER + SHIFT + G",      hl.dsp.exec_cmd(games, { float = true, size = {1280, 720} }))
+hl.bind("SUPER + SHIFT + F",      hl.dsp.exec_cmd(fileManager, { float = true, size = {1280, 720} }))
+hl.bind("SUPER + SHIFT + A",      hl.dsp.exec_cmd(audioManager, { float = true, size = {1280, 720} }))
+hl.bind("SUPER + SHIFT + B",      hl.dsp.exec_cmd(bluetoothManager, { float = true, size = {1280, 720} }))
+hl.bind("SUPER + SHIFT + C",      hl.dsp.exec_cmd(diskManager, { float = true, size = {1280, 720} }))
+hl.bind("SUPER + SHIFT + N",      hl.dsp.exec_cmd(networkManager, { float = true, size = {1280, 720} }))
 
 -- Quickshell
 hl.bind("SUPER + H", hl.dsp.exec_cmd("qs ipc call bar toggle"))
@@ -232,8 +233,8 @@ hl.config({
 
         blur = {
             enabled   = true,
-            size      = 3,
-            passes    = 1,
+            size      = 12,
+            passes    = 4,
             vibrancy  = 0.1696,
         },
     },
@@ -334,10 +335,18 @@ hl.window_rule({
     name = "autostart-term-style",
     match = { class = "^com.autostart.term$" },
     float = true,
-    size = "800 500",
+    size = "1000 750",
     center = true,
 })
 
+-- Class rule: gnome-clocks is single-instance, so exec-rule float doesn't apply
+hl.window_rule({
+    name = "float-gnome-clocks",
+    match = { class = "^org.gnome.clocks$" },
+    float = true,
+    size = "500 500",
+    center = true,
+})
 
 hl.window_rule({
     -- Fix some dragging issues with XWayland
@@ -355,6 +364,12 @@ hl.window_rule({
 })
 
 -- Layer rules also return a handle.
+hl.layer_rule({
+    name  = "quickshell-bar-blur",
+    match = { namespace = "^quickshell-bar$" },
+    blur  = true,
+})
+
 -- local overlayLayerRule = hl.layer_rule({
 --     name  = "no-anim-overlay",
 --     match = { namespace = "^my-overlay$" },

@@ -48,6 +48,7 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) — cloning this rep
 - gdu                     (tui storage manager)
 - seahorse                (keyring manager)
 - opencode                (AI)
+- gnome-clocks            (Timer, World Clock, StopWatch)
 
 ---
 

@@ -5,13 +5,9 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
-import Quickshell.Wayland
 
 Scope {
     id: root
-    property int todoCount: 0
-    property int notifCount: 0
-    signal openTodo()
 
     // Nerd Font glyphs sit slightly high in their line box; nudge down (px).
     // Raise to 2 if icons still look high, set to 0 to disable.
@@ -64,7 +60,6 @@ Scope {
     property int cpuUsage: 0
     property int memPercent: 0
     property string netState: "disconnected" // wifi | ethernet | disconnected
-    property real netPingMs: -1
 
     property real _prevTotal: 0
     property real _prevIdle: 0
@@ -113,18 +108,6 @@ Scope {
         }
     }
 
-    Process {
-        id: pingProc
-        command: ["ping", "-n", "-c", "1", "-W", "1", "1.1.1.1"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const match = text.match(/time[=<]([\\d.]+)\\s*ms/);
-                root.netPingMs = root.netState === "disconnected" ? -1
-                    : match ? Number(match[1]) : -2;
-            }
-        }
-    }
-
     Timer {
         interval: 1000; running: true; repeat: true; triggeredOnStart: true
         onTriggered: {
@@ -136,17 +119,6 @@ Scope {
     Timer {
         interval: 5000; running: true; repeat: true; triggeredOnStart: true
         onTriggered: if (!netProc.running) netProc.running = true
-    }
-
-    Timer {
-        interval: 5000; running: true; repeat: true; triggeredOnStart: true
-        onTriggered: {
-            if (root.netState === "disconnected") {
-                root.netPingMs = -1;
-            } else if (!pingProc.running) {
-                pingProc.running = true;
-            }
-        }
     }
 
     PwObjectTracker { objects: [Pipewire.defaultAudioSink] }
@@ -168,7 +140,6 @@ Scope {
         property bool hoverGrow: true
         property real yOffset: 0
         signal clicked(var mouse)
-        signal doubleClicked(var mouse)
         signal scrolled(real delta)
 
         implicitWidth: label.implicitWidth + 20
@@ -193,7 +164,6 @@ Scope {
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
             onClicked: mouse => mod.clicked(mouse)
-            onDoubleClicked: mouse => mod.doubleClicked(mouse)
             onWheel: wheel => mod.scrolled(wheel.angleDelta.y)
         }
     }
@@ -211,15 +181,14 @@ Scope {
             implicitHeight: 24
             color: "transparent"
             visible: root.barVisible
-            WlrLayershell.namespace: "quickshell-bar"
 
             // ===== LEFT =====
             Rectangle {
-                anchors { left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: 6 }
+                anchors { left: parent.left; top: parent.top; leftMargin: 6; topMargin: 4 }
                 height: 20
                 width: leftRow.implicitWidth + 4
                 radius: Theme.radius
-                color: Qt.alpha(Theme.bg, 0.55)
+                color: Theme.bg
 
                 Row {
                     id: leftRow
@@ -228,14 +197,8 @@ Scope {
                     anchors.leftMargin: 2
                     spacing: 0
 
-                    Mod {
-                        text: "CPU " + root.cpuUsage + "%"
-                        onClicked: root.run("ghostty -e btop")
-                    }
-                    Mod {
-                        text: "RAM " + root.memPercent + "%"
-                        onClicked: root.run("ghostty -e btop")
-                    }
+                    Mod { text: "CPU " + root.cpuUsage + "%" }
+                    Mod { text: "RAM " + root.memPercent + "%" }
 
                     // Workspaces
                     Row {
@@ -284,11 +247,11 @@ Scope {
             // ===== CENTER =====
             Rectangle {
                 id: clockPanel
-                anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter }
+                anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 4 }
                 height: 20
                 width: clockMod.implicitWidth + 4
                 radius: Theme.radius
-                color: Qt.alpha(Theme.bg, 0.55)
+                color: Theme.bg
 
                 SystemClock { id: clk; precision: SystemClock.Minutes }
 
@@ -297,7 +260,6 @@ Scope {
                     anchors.centerIn: parent
                     bold: true
                     text: Qt.formatDateTime(clk.date, "HH:mm")
-                    onClicked: root.run("gnome-clocks")
                 }
 
                 // ---- Popup open/close: stays open while the pointer is on the
@@ -316,7 +278,6 @@ Scope {
                     onTriggered: { clockPanel.calOpen = false; calBox.monthOffset = 0; }
                 }
 
-
                 // ---- Calendar popup ----
                 PopupWindow {
                     id: calendar
@@ -332,7 +293,7 @@ Scope {
                         id: calBox
                         anchors.fill: parent
                         radius: 4                 // rectangular; raise for softer corners
-                        color: Qt.alpha(Theme.bg, 0.55)
+                        color: Theme.bg
 
                         HoverHandler { id: calHover }
 
@@ -352,32 +313,6 @@ Scope {
                         // scroll over the popup to change month
                         WheelHandler {
                             onWheel: e => calBox.monthOffset += (e.angleDelta.y > 0 ? -1 : 1)
-                        }
-
-                        // Todo button (top right); opens the todo panel in place of the calendar
-                        Item {
-                            anchors { top: parent.top; right: parent.right; topMargin: 10; rightMargin: 10 }
-                            width: todoLbl.implicitWidth + 12
-                            height: 22
-                            z: 1
-                            Text {
-                                id: todoLbl
-                                anchors.centerIn: parent
-                                text: "TODO " + root.todoCount //\uf046
-                                color: todoMa.containsMouse ? Theme.accent : Theme.text
-                                font.family: Theme.iconFont
-                                font.pixelSize: 13
-                            }
-                            MouseArea {
-                                id: todoMa
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    root.openTodo();
-                                    clockPanel.calOpen = false;
-                                    calBox.monthOffset = 0;
-                                }
-                            }
                         }
 
                         Column {
@@ -549,11 +484,11 @@ Scope {
 
             // ===== RIGHT =====
             Rectangle {
-                anchors { right: parent.right; verticalCenter: parent.verticalCenter; rightMargin: 6 }
+                anchors { right: parent.right; top: parent.top; rightMargin: 6; topMargin: 4 }
                 height: 20
                 width: rightRow.implicitWidth + 4
                 radius: Theme.radius
-                color: Qt.alpha(Theme.bg, 0.55)
+                color: Theme.bg
 
                 Row {
                     id: rightRow
@@ -636,18 +571,17 @@ Scope {
                             const v = sink.audio.volume + (delta / 120) * 0.02;
                             sink.audio.volume = Math.max(0, Math.min(1.0, v));
                         }
-                        onClicked: root.run("pavucontrol")
+                        onClicked: mouse => {
+                            root.run("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle");
+                        }
                     }
 
                     // Network (nf-md wifi / ethernet / wifi_off)
                     Mod {
                         baseSize: 13
                         yOffset: root.iconYOffset
-                        text: (root.netState === "wifi" ? "\uDB81\uDDA9"
-                            : root.netState === "ethernet" ? "\uDB80\uDE00" : "\uDB81\uDDAA")
-                            + (root.netPingMs < 0 ? ""
-                                : "  " + Math.round(root.netPingMs) + "ms")
-                        onClicked: root.run("nm-connection-editor")
+                        text: root.netState === "wifi" ? "\uDB81\uDDA9"
+                            : root.netState === "ethernet" ? "\uDB80\uDE00" : "\uDB81\uDDAA"
                     }
 
                     // Battery (hidden unless a laptop battery exists)
@@ -656,14 +590,6 @@ Scope {
                         baseSize: 12
                         text: (root.batCharging ? "\uf0e7 " : "") + root.batIcon + "  " + root.batPct + "%"
                         color: root.batLow ? Theme.danger : Theme.text
-                    }
-
-                    // Notifications
-                    Mod {
-                        baseSize: 13
-                        yOffset: root.iconYOffset
-                        text: "\uDB80\uDC9A " + (root.notifCount > 0 ? root.notifCount : "")  // nf-md bell
-                        onClicked: root.run("qs ipc call notifications toggle")
                     }
 
                     // Power

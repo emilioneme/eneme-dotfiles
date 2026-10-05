@@ -18,24 +18,8 @@ PanelWindow {
     property int sideGap: 16         // distance from the right edge
     property int cardWidth: 300
     property int maxHistory: 100
-    property int defaultTimeout: 5000   // ms, when the app gives none
-    property real lastBonus: 1.2        // multiplier when it's the only popup
-    property real lowMult: 0.7          // urgency multipliers
-    property real normalMult: 1.0
-    property int criticalTimeout: 120000   // ms; fixed, ignores app timeout and multipliers
 
-    // Filename for "normal" is misspelled on disk (nomral.mp3).
-    readonly property string soundDir: Quickshell.shellDir + "/sound/"
-    function playSound(urgency) {
-        if (root.mode !== 0)
-            return;
-        const f = urgency === NotificationUrgency.Critical ? "critical.mp3" : "normal.mp3";
-        Quickshell.execDetached(["mpv", "--no-video", "--really-quiet", soundDir + f]);
-    }
-    // 0 = normal, 1 = no sound, 2 = no sound and no popups (history still recorded)
-    property int mode: 0
     property bool panelOpen: false
-    readonly property int count: history.count
 
     anchors {
         top: true
@@ -165,7 +149,6 @@ PanelWindow {
 
         onNotification: n => {
             n.tracked = true;
-            root.playSound(n.urgency);
 
             if (n.transient)
                 return;
@@ -280,7 +263,7 @@ PanelWindow {
     // ------------------------------------------------------------------
     Column {
         id: stack
-        visible: !root.panelOpen && root.mode !== 2
+        visible: !root.panelOpen
         anchors.top: parent.top
         anchors.topMargin: root.topGap
         anchors.right: parent.right
@@ -326,15 +309,12 @@ PanelWindow {
                     }
                 }
 
-                // Auto-expire (paused on hover).
+                // Auto-expire (paused on hover, never for critical).
                 Timer {
-                    interval: wrapper.critical ? root.criticalTimeout
-                        : (wrapper.modelData.expireTimeout > 0
+                    interval: wrapper.modelData.expireTimeout > 0
                         ? wrapper.modelData.expireTimeout * 1000
-                        : root.defaultTimeout)
-                        * (server.trackedNotifications.values.length === 1 ? root.lastBonus : 1)
-                        * (wrapper.modelData.urgency === NotificationUrgency.Low ? root.lowMult : root.normalMult)
-                    running: !hover.containsMouse && !wrapper.leaving
+                        : 6000
+                    running: !wrapper.critical && !hover.containsMouse && !wrapper.leaving
                     onTriggered: wrapper.close(true)
                 }
 
@@ -531,7 +511,7 @@ PanelWindow {
                 Text {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Notifications: " + (history.count > 0 ? "  " + history.count : "")
+                    text: "Notifications" + (history.count > 0 ? "  " + history.count : "")
                     font.pixelSize: 13
                     font.bold: true
                     color: Theme.text
@@ -541,28 +521,6 @@ PanelWindow {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
-
-                    // Mode: normal -> no sound -> no sound + no popups
-                    Rectangle {
-                        width: 24
-                        height: 24
-                        radius: 8
-                        color: Theme.alpha(root.mode === 0 ? Theme.text : Theme.accent, modeArea.containsMouse ? 0.25 : 0.1)
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: root.mode === 0 ? "󰂚" : root.mode === 1 ? "󰂛" : "󰪑"
-                            font.family: Theme.iconFont
-                            font.pixelSize: 13
-                            color: root.mode === 0 ? Theme.text : Theme.accent
-                        }
-                        MouseArea {
-                            id: modeArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: root.mode = (root.mode + 1) % 3
-                        }
-                    }
 
                     // Clear all
                     Rectangle {

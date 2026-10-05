@@ -140,7 +140,7 @@ PanelWindow {
         signal clicked()
 
         width: 24; height: 24; radius: 8
-        color: Theme.alpha(Theme.text, 0.07)
+        color: Theme.bg
         Behavior on color { ColorAnimation { duration: 120 } }
         Behavior on opacity { NumberAnimation { duration: 120 } }
 
@@ -176,16 +176,20 @@ PanelWindow {
             id: panel
             width: root.cardWidth
             height: panelCol.height + 28
-            radius: 4
-            color: Theme.bg
+            radius: 20
+            color: "transparent"
 
             anchors.top: parent.top
-            anchors.topMargin: 28   // just below the bar, where the calendar sits
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: root.topGap
+            anchors.right: parent.right
+            anchors.rightMargin: root.showing ? root.sideGap : -(root.cardWidth + 40)
 
             opacity: root.showing ? 1 : 0
             visible: opacity > 0
 
+            Behavior on anchors.rightMargin {
+                NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+            }
             Behavior on opacity {
                 NumberAnimation { duration: 180 }
             }
@@ -210,7 +214,7 @@ PanelWindow {
                     width: parent.width
                     height: Math.max(root.rowHeight, input.contentHeight + 24)
                     radius: 12
-                    color: Theme.alpha(Theme.text, 0.07)
+                    color: Theme.bg
                     border.width: input.activeFocus ? 1 : 0
                     border.color: Theme.accent
                     Behavior on color { ColorAnimation { duration: 120 } }
@@ -222,7 +226,7 @@ PanelWindow {
                         anchors.leftMargin: 10
                         anchors.top: parent.top
                         anchors.topMargin: 8
-                        color: "transparent"
+                        color: Theme.bg
 
                         Text {
                             anchors.centerIn: parent
@@ -314,7 +318,7 @@ PanelWindow {
                         width: list.width
                         height: Math.max(root.rowHeight, edit.contentHeight + 24)
                         radius: 12
-                        color: Theme.alpha(Theme.text, 0.07)
+                        color: Theme.bg
                         border.width: edit.activeFocus ? 1 : 0
                         border.color: Theme.accent
                         Behavior on color { ColorAnimation { duration: 120 } }

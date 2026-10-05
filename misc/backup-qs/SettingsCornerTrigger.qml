@@ -108,7 +108,8 @@ PanelWindow {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: Quickshell.execDetached([
+        hoverEnabled: true
+        onEntered: Quickshell.execDetached([
             "qs", "ipc", "call", "powermenu", "toggle"
         ])
     }

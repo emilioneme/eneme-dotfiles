@@ -3,9 +3,9 @@ import Quickshell
 ShellRoot {
     VolumeOsd {}
     ScreenshotOsd {}
-    Notifications {}
+    Notifications { id: notifs }
     PowerMenu {}
-    Bar {}
-    Todo {}
+    Bar { todoCount: todo.remaining; notifCount: notifs.count; onOpenTodo: todo.openMenu() }
+    Todo { id: todo }
     SettingsCornerTrigger {}
 }
