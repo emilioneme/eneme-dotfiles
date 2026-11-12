@@ -16,16 +16,18 @@ Scope {
         ? ((player.trackArtist ? player.trackArtist + " - " : "") + player.trackTitle)
         : ""
     // nf-md play / pause
-    readonly property string text: (playing ? "\uDB81\uDC0A " : "\uDB80\uDFE4 ") + title
+    readonly property string statusIcon: playing ? "\uDB81\uDC0A" : "\uDB80\uDFE4"
 
-    readonly property int maxW: 180       // visible width in px
+    readonly property int maxW: 180       // visible title width in px
+    readonly property int iconW: 14
+    readonly property int iconGap: 4
     readonly property int gap: 20         // gap between the two copies
     readonly property int step: 1         // px per tick (integer = crisp text)
     readonly property int interval: 33    // ms per tick (~30 fps); 50 = 20 fps
     readonly property int holdMs: 2500    // idle pause at the start of each loop
 
     readonly property real textW: measure.implicitWidth
-    readonly property bool animating: playing && textW > maxW
+    readonly property bool animating: textW > maxW
 
     property int x: 0
     property bool hold: true
@@ -35,7 +37,7 @@ Scope {
         visible: false
         Text {
             id: measure
-            text: root.text
+            text: root.title
             font.family: Theme.iconFont
             font.pixelSize: 11
         }

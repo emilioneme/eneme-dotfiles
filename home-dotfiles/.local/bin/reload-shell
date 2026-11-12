@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Reload Hyprland and (re)start quickshell. Safe to run when Hyprland is not up.
+# --shell-only: only restart quickshell (keeps live monitor changes like scale).
 
 if ! command -v hyprctl >/dev/null 2>&1 || ! hyprctl version >/dev/null 2>&1; then
     echo "Hyprland not running; skipping reload (config applies on next login)."
     exit 0
 fi
 
-hyprctl reload
+[[ "${1:-}" == "--shell-only" ]] || hyprctl reload
 
 if pgrep -x quickshell >/dev/null; then
     pkill -x quickshell

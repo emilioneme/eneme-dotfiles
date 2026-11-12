@@ -11,7 +11,11 @@ Scope {
     id: root
     property int todoCount: 0
     property int notifCount: 0
+    property bool barBlurEnabled: true
     signal openTodo()
+    readonly property color barSurface: barBlurEnabled
+        ? Qt.alpha(Theme.bg, 0.55)
+        : Qt.rgba(Theme.bg.r, Theme.bg.g, Theme.bg.b, 1)
 
     // Nerd Font glyphs sit slightly high in their line box; nudge down (px).
     // Raise to 2 if icons still look high, set to 0 to disable.
@@ -213,13 +217,22 @@ Scope {
             visible: root.barVisible
             WlrLayershell.namespace: "quickshell-bar"
 
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                onClicked: {
+                    root.barBlurEnabled = !root.barBlurEnabled;
+                    root.run("hyprctl eval 'barBlurRule:set_enabled(" + root.barBlurEnabled + ")'");
+                }
+            }
+
             // ===== LEFT =====
             Rectangle {
                 anchors { left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: 6 }
                 height: 20
                 width: leftRow.implicitWidth + 4
                 radius: Theme.radius
-                color: Qt.alpha(Theme.bg, 0.55)
+                color: root.barSurface
 
                 Row {
                     id: leftRow
@@ -288,7 +301,7 @@ Scope {
                 height: 20
                 width: clockMod.implicitWidth + 4
                 radius: Theme.radius
-                color: Qt.alpha(Theme.bg, 0.55)
+                color: root.barSurface
 
                 SystemClock { id: clk; precision: SystemClock.Minutes }
 
@@ -332,7 +345,7 @@ Scope {
                         id: calBox
                         anchors.fill: parent
                         radius: 4                 // rectangular; raise for softer corners
-                        color: Qt.alpha(Theme.bg, 0.55)
+                        color: root.barSurface
 
                         HoverHandler { id: calHover }
 
@@ -553,7 +566,7 @@ Scope {
                 height: 20
                 width: rightRow.implicitWidth + 4
                 radius: Theme.radius
-                color: Qt.alpha(Theme.bg, 0.55)
+                color: root.barSurface
 
                 Row {
                     id: rightRow
@@ -565,7 +578,8 @@ Scope {
                     // MPRIS marquee (state + ticker live in Marquee.qml)
                     Item {
                         visible: Marquee.player !== null && Marquee.title !== ""
-                        width: visible ? Math.min(Marquee.textW, Marquee.maxW) + 20 : 0
+                        width: visible ? Math.min(Marquee.textW, Marquee.maxW)
+                            + Marquee.iconW + Marquee.iconGap + 20 : 0
                         height: 18
                         anchors.verticalCenter: parent.verticalCenter
 
@@ -573,33 +587,54 @@ Scope {
                             anchors.fill: parent
                             anchors.leftMargin: 10
                             anchors.rightMargin: 10
-                            clip: true
 
-                            Row {
-                                x: Marquee.animating ? Marquee.x : 0
-                                spacing: Marquee.gap
-                                anchors.verticalCenter: parent.verticalCenter
+                            Text {
+                                id: musicStatus
+                                anchors { left: parent.left; verticalCenter: parent.verticalCenter }
                                 anchors.verticalCenterOffset: root.iconYOffset
+                                width: Marquee.iconW
+                                text: Marquee.statusIcon
+                                color: Theme.text
+                                font.family: Theme.iconFont
+                                font.pixelSize: 11
+                                renderType: Text.NativeRendering
+                            }
 
-                                Text {
-                                    text: Marquee.text
-                                    color: Theme.text
-                                    font.family: Theme.iconFont
-                                    font.pixelSize: 11
-                                    renderType: Text.NativeRendering
-                                    width: Marquee.animating ? Marquee.textW
-                                                             : Math.min(Marquee.textW, Marquee.maxW)
-                                    elide: Marquee.animating ? Text.ElideNone : Text.ElideRight
+                            Item {
+                                anchors {
+                                    left: musicStatus.right
+                                    right: parent.right
+                                    top: parent.top
+                                    bottom: parent.bottom
+                                    leftMargin: Marquee.iconGap
                                 }
+                                clip: true
 
-                                // Second copy only while scrolling (seamless wrap)
-                                Text {
-                                    visible: Marquee.animating
-                                    text: Marquee.text
-                                    color: Theme.text
-                                    font.family: Theme.iconFont
-                                    font.pixelSize: 11
-                                    renderType: Text.NativeRendering
+                                Row {
+                                    x: Marquee.animating ? Marquee.x : 0
+                                    spacing: Marquee.gap
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.verticalCenterOffset: root.iconYOffset
+
+                                    Text {
+                                        text: Marquee.title
+                                        color: Theme.text
+                                        font.family: Theme.iconFont
+                                        font.pixelSize: 11
+                                        renderType: Text.NativeRendering
+                                        width: Marquee.animating ? Marquee.textW : Math.min(Marquee.textW, Marquee.maxW)
+                                        elide: Marquee.animating ? Text.ElideNone : Text.ElideRight
+                                    }
+
+                                    // Second title copy enables seamless wrap without moving the status icon.
+                                    Text {
+                                        visible: Marquee.animating
+                                        text: Marquee.title
+                                        color: Theme.text
+                                        font.family: Theme.iconFont
+                                        font.pixelSize: 11
+                                        renderType: Text.NativeRendering
+                                    }
                                 }
                             }
                         }
@@ -645,7 +680,7 @@ Scope {
                         yOffset: root.iconYOffset
                         text: (root.netState === "wifi" ? "\uDB81\uDDA9"
                             : root.netState === "ethernet" ? "\uDB80\uDE00" : "\uDB81\uDDAA")
-                            + (root.netPingMs < 0 ? ""
+                            + (root.netPingMs < -1 ? ""
                                 : "  " + Math.round(root.netPingMs) + "ms")
                         onClicked: root.run("nm-connection-editor")
                     }

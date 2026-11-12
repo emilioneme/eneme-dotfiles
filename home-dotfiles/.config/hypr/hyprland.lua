@@ -27,6 +27,27 @@ hl.monitor({
     scale    = "auto",
 })
 
+-- Main monitor pinned at the origin so the headless one always lands to its right
+hl.monitor({
+    output   = "DP-3",
+    mode     = "3440x1440@144",
+    position = "0x0",
+    scale    = "1",
+})
+
+-- Headless (virtual) monitor, created at startup with `hyprctl output create headless`
+hl.monitor({
+    output   = "HEADLESS-1",
+    mode     = "2360x1640@60",
+    position = "3440x0",
+    scale    = "1",
+})
+
+-- Pin workspaces 7-10 (SUPER+7..0) to the headless monitor
+for i = 7, 10 do
+    hl.workspace_rule({ workspace = tostring(i), monitor = "HEADLESS-1", default = (i == 7), persistent = true })
+end
+
 
 
 ---------------------
@@ -58,10 +79,13 @@ local networkManager = "nm-connection-editor"
 --
  hl.on("hyprland.start", function () 
      hl.exec_cmd(terminal .. " --class=com.autostart.term")
+     hl.exec_cmd("hyprctl output create headless HEADLESS-1")
      hl.exec_cmd("awww-daemon")
      hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
      hl.exec_cmd("wp-rotate.sh")
      hl.exec_cmd("quickshell")
+     hl.exec_cmd("systemctl --user start hyprpolkitagent")
+     hl.exec_cmd("systemctl --user start app-dev.lizardbyte.app.Sunshine.service")
 --   hl.exec_cmd("qs ipc call bar toggle")
 --   hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &")
 --   hl.exec_cmd("nm-applet")
@@ -129,6 +153,14 @@ hl.bind("SUPER + SHIFT + N",      hl.dsp.exec_cmd(networkManager, { float = true
 hl.bind("SUPER + H", hl.dsp.exec_cmd("qs ipc call bar toggle"))
 hl.bind("SUPER + R", hl.dsp.exec_cmd("~/.local/bin/reload-shell"))
 
+-- Monitor scale (focused monitor)
+hl.bind("SUPER + equal",         hl.dsp.exec_cmd("~/.local/bin/monitor-scale.sh up"))
+hl.bind("SUPER + minus",         hl.dsp.exec_cmd("~/.local/bin/monitor-scale.sh down"))
+hl.bind("SUPER + SHIFT + equal", hl.dsp.exec_cmd("~/.local/bin/monitor-scale.sh reset"))
+
+-- Headless monitor toggle
+hl.bind("SUPER + M", hl.dsp.exec_cmd("~/.local/bin/headless-toggle.sh"))
+
 -- Window navigation
 hl.bind("SUPER + Q", hl.dsp.window.float({ action = "toggle" }))
 hl.bind("SUPER + O", hl.dsp.window.float({ action = "toggle" }))
@@ -147,6 +179,7 @@ hl.bind("SUPER + SHIFT + right", hl.dsp.exec_cmd("hyprctl dispatch swapwindow r"
 hl.bind("SUPER + SHIFT + up",    hl.dsp.exec_cmd("hyprctl dispatch swapwindow u"))
 hl.bind("SUPER + SHIFT + down",  hl.dsp.exec_cmd("hyprctl dispatch swapwindow d"))
 
+
 -- Workspace navigation
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
@@ -157,8 +190,8 @@ end
 hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind("SUPER + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 
-hl.bind("SUPER + S",         hl.dsp.workspace.toggle_special("magic"))
-hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+-- hl.bind("SUPER + S",         hl.dsp.workspace.toggle_special("magic"))
+-- hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
 hl.bind("SUPER + P", hl.dsp.window.pseudo())
 hl.bind("SUPER + J", hl.dsp.layout("togglesplit"))    -- dwindle only
@@ -181,12 +214,6 @@ hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = tr
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
-
--- Virtual terminal switching (TTYs)
-for i = 1, 12 do
-    hl.bind("CTRL + ALT + F" .. i, hl.dsp.exec_cmd("pkexec chvt " .. i), { locked = true })
-end
-
 
 
 
@@ -364,7 +391,8 @@ hl.window_rule({
 })
 
 -- Layer rules also return a handle.
-hl.layer_rule({
+-- Global on purpose: the quickshell bar toggles it via `hyprctl eval`.
+barBlurRule = hl.layer_rule({
     name  = "quickshell-bar-blur",
     match = { namespace = "^quickshell-bar$" },
     blur  = true,
