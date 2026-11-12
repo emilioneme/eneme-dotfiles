@@ -35,7 +35,7 @@ hl.monitor({
     scale    = "1",
 })
 
--- Headless (virtual) monitor, created at startup with `hyprctl output create headless`
+-- Headless (virtual) monitor, off by default; created on demand by SUPER+M (headless-toggle.sh)
 hl.monitor({
     output   = "HEADLESS-1",
     mode     = "2360x1640@60",
@@ -79,7 +79,7 @@ local networkManager = "nm-connection-editor"
 --
  hl.on("hyprland.start", function () 
      hl.exec_cmd(terminal .. " --class=com.autostart.term")
-     hl.exec_cmd("hyprctl output create headless HEADLESS-1")
+--   hl.exec_cmd("hyprctl output create headless HEADLESS-1")  -- off by default; SUPER+M turns it on
      hl.exec_cmd("awww-daemon")
      hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
      hl.exec_cmd("wp-rotate.sh")
@@ -300,6 +300,14 @@ hl.config({
     misc = {
         force_default_wallpaper = 1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = true, -- If true disables the random hyprland logo / anime girl background. :(
+    },
+})
+
+-- Don't auto-switch the monitor into HDR when an app goes fullscreen
+-- (YouTube/Chrome fullscreen made the screen blank while it re-synced)
+hl.config({
+    render = {
+        cm_auto_hdr = 0,
     },
 })
 
